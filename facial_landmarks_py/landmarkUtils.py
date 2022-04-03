@@ -288,7 +288,7 @@ def extract_landmarks_media_pipe(input_video, input_dir, show_annotated_video = 
     landmark_output = []
     raw_landmark_output = []
     with mp_face_mesh.FaceMesh(
-            static_image_mode=True,
+            static_image_mode=False,
             max_num_faces=1,
             min_detection_confidence=0.5,
             refine_landmarks=True) as face_mesh:
