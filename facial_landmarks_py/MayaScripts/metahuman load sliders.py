@@ -12,11 +12,11 @@ def textLoading(pathTextFiled):
             filepath = "C:/Users/evansamaa/Desktop/Motion_Paint/facial_landmarks_py/data/motion.json"
         elif os.access(os.path.dirname(filepath), os.W_OK):
             #the file does not exists but write privileges are given
-            print("invalid")
+            print "invalid"
             return
         else:
             #can not write there with open("filepath")
-            print("invalid")
+            print "invalid"
             return
         with open(filepath) as f:
             motion = json.load(f)
