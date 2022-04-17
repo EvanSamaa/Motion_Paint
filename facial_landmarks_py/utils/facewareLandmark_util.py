@@ -1,8 +1,7 @@
 import xml.etree.ElementTree as ET
 import numpy as np
-import json
 from matplotlib import pyplot as plt
-from landmarkUtils import extract_landmarks_media_pipe
+from utils.landmark_util import extract_landmarks_media_pipe
 
 class faceWareLandmarkObject():
 
@@ -68,7 +67,6 @@ class faceWareLandmarkObject():
         innerLip = self.data[:, 39:52]
         outerLip = self.data[:, 25:39]
         return [innerLip, outerLip]
-
 if __name__ == "__main__":
     # with open("mediaPipeMapping.json", "r") as f:
     #     maping = json.load(f)
