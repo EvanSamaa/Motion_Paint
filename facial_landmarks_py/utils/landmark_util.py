@@ -288,7 +288,7 @@ def extract_landmarks_media_pipe(input_video, input_dir, show_annotated_video = 
     landmark_output = []
     raw_landmark_output = []
     with mp_face_mesh.FaceMesh(
-            static_image_mode=False,
+            static_image_mode=True,
             max_num_faces=1,
             min_detection_confidence=0.5,
             refine_landmarks=True) as face_mesh:
@@ -524,9 +524,10 @@ def extract_landmark_media_pipe_single_image(file_path):
 
 if __name__ == "__main__":
 
-    extract_landmarks_media_pipe("rollingInTheDeep.mp4",
-                                 "E:/Facial Feature Motion Clip", save_annotated_video=True)
-
+    extract_landmarks_media_pipe("yt5s.com-As you can see, I'm a lot happier..mp4",
+                                 "/Volumes/KINGSTON/", save_annotated_video=False)
+    # extract_landmarks_media_pipe("rollingInTheDeep.mp4",
+    #                              "E:/Facial Feature Motion Clip", save_annotated_video=True)
     # extract_landmarks_Fan("EvanGoPro.mp4",
     #                              "E:\\MASC\\Motion_paint\\example_videos", save_annotated_video=False, show_normalized_pts=True)
     A[2]
