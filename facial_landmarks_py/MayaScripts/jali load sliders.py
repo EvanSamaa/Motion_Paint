@@ -79,9 +79,9 @@ def rotationtextLoading(pathTextFiled, intensitySlider):
         # attr_min, attr_max = cmds.transformLimits(node, query=True, translationY=True)
         val = cmds.floatSliderGrp(thisSlider, query=True, value=True)
         for i in range(len(t)):
-            cmds.setKeyframe("CNT_NECK.rotateZ", v=-v[i][0] * val, t=t[i] * 30)
-            cmds.setKeyframe("CNT_NECK.rotateX", v=-v[i][1] * val, t=t[i] * 30)
-            cmds.setKeyframe("CNT_NECK.rotateY", v=v[i][2] * val, t=t[i] * 30)
+            cmds.setKeyframe("CNT_NECK.rotateZ", v=v[i][0] * val, t=t[i] * 30)
+            cmds.setKeyframe("CNT_NECK.rotateX", v=-v[i][2] * val, t=t[i] * 30)
+            cmds.setKeyframe("CNT_NECK.rotateY", v=v[i][1] * val, t=t[i] * 30)
 
     return loadTxt
 
