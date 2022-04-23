@@ -110,3 +110,4 @@ rotationIntensity = cmds.floatSliderGrp(label='rotation Intensity', field=True, 
 cmds.button(label='load Rotation', command=rotationtextLoading(path, rotationIntensity))
 cmds.button(label='clear Curves', command=clearSelectedNodes)
 cmds.showWindow()
+
