@@ -13,6 +13,10 @@ def compute_rotation(X, Y):
     mu_x = X.mean(axis=1)
     mu_y = Y.mean(axis=1)
     rho2_x = X.var(axis=1).sum()
+    rho2_xx = X[0:1].var(axis=1).sum()*3.0
+    rho2_xy = X[1:2].var(axis=1).sum()*3.0
+    rho2_xz = X[2:3].var(axis=1).sum()*3.0
+
     rho2_y = Y.var(axis=1).sum()
     cov_xy = 1.0 / X.shape[1] * (Y - np.expand_dims(mu_y, axis=1)) @ (X - np.expand_dims(mu_x, axis=1)).T
     # SVD on the covariance matrix
@@ -32,10 +36,12 @@ def compute_rotation(X, Y):
             # compute rotation and scale and translation
     R = U @ S @ V_T
     c = (1.0 / rho2_x) * np.trace(D @ S)
-    t = mu_y - c * R @ mu_x
+    cc = 1.0 / np.array([rho2_xx, rho2_xy, rho2_xz]) * np.trace(D @ S)
+    cc = np.expand_dims(cc, axis=1)
+    t = mu_y - cc * R @ mu_x
     # X_prime = c * R @ frame_i.T + np.expand_dims(t, 1)
     # X_prime = rotated_frame_i.T
-    return R, c, np.expand_dims(t, 1)
+    return R, cc, np.expand_dims(t, 1)
 
 # input neturalPose should be a numpy array of shape (N, M)
 # # data should be a numpy array of shape (T, N, M)
@@ -104,6 +110,7 @@ def shearNormalization(data, neutral_frame, shear_landmarkSet, rotation=True, ro
         shearCenter = [4]
         if rotation:
             R, c, t = compute_rotation(data_1[rotation_landmarkset].T, data_0[rotation_landmarkset].T)
+            print((R @ data_1.T).shape)
             norm_data_1 = (c * R @ data_1.T + t).T
         else:
             norm_data_1 = data_1
