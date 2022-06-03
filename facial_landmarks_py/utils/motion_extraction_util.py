@@ -1,9 +1,16 @@
 import math
 import numpy as np
 import json
-
+import cv2
 MIN_CUTOFF = 0.0001
 BETA = 5
+
+lk_params = dict(
+    winSize=(15, 15),
+    maxLevel=3,
+    criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03),
+)
+
 
 # this function rotates and translates pointcloud X to match the position of Y
 # the algorithm uses X and Y notation, where the input dimension should be (M x N)
@@ -110,7 +117,7 @@ def shearNormalization(data, neutral_frame, shear_landmarkSet, rotation=True, ro
         shearCenter = [4]
         if rotation:
             R, c, t = compute_rotation(data_1[rotation_landmarkset].T, data_0[rotation_landmarkset].T)
-            print((R @ data_1.T).shape)
+            # print((R @ data_1.T).shape)
             norm_data_1 = (c * R @ data_1.T + t).T
         else:
             norm_data_1 = data_1
@@ -134,6 +141,31 @@ def iterativeNormalization(data, neutral_frame, rotation_landmarkset, sheer_land
     out_data = shearNormalization(out_data, neutral_frame, sheer_landmarkset, rotation=True,
                                   rotation_landmarkset=rotation_landmarkset)
     return out_data
+
+def lucas_kanade_method(video_path):
+    # Read the video
+    cap = cv2.VideoCapture(video_path)
+
+    # Parameters for ShiTomasi corner detection
+    feature_params = dict(maxCorners=100, qualityLevel=0.3, minDistance=7, blockSize=7)
+
+    # Parameters for Lucas Kanade optical flow
+    lk_params = dict(
+        winSize=(9, 9),
+        maxLevel=2,
+        criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03),
+    )
+
+    # Create random colors
+    color = np.random.randint(0, 255, (100, 3))
+
+    # Take first frame and find corners in it
+    ret, old_frame = cap.read()
+    old_gray = cv2.cvtColor(old_frame, cv2.COLOR_BGR2GRAY)
+    p0 = cv2.goodFeaturesToTrack(old_gray, mask=None, **feature_params)
+
+    # Create a mask image for drawing purposes
+    mask = np.zeros_like(old_frame)
 
 #################################################################################
 ########################## one euro filter related fns ##########################
@@ -219,20 +251,6 @@ def constrainedOneEuroFilter(data, dataRange, keyFrames):
             t = np.arange(0, forward.shape[0])
             out_dataPartition.append(runEuro(t, forward))
     return np.concatenate(out_dataPartition)
-def outputToFile(path, arr, fps, start):
-    # the input should be in the form of a 2D array with shape [n, ]
-    arr_length = arr.shape[0]
-    dt = 1.0 / fps
-    t_arr = np.arange(0, arr_length) * dt + start
-    t_arr = t_arr.tolist()
-    arr = arr / arr.max()
-    v_arr = arr.tolist()
-
-    output = {"t": t_arr, "v": v_arr}
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(output, f)
-    return
-
 #################################################################################
 ########################## output to json utils ##########################
 #################################################################################
