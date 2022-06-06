@@ -254,7 +254,7 @@ def rotation_matrix_from_vectors(vec1, vec2):
     kmat = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
     rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s ** 2))
     return rotation_matrix
-def extract_landmarks_media_pipe(input_video, input_dir, show_annotated_video = False, show_normalized_pts = False, save_annotated_video = False,  tolerance = 0.01):
+def extract_landmarks_media_pipe(input_video, input_dir, show_annotated_video = False, show_normalized_pts = False, save_annotated_video = False,  tolerance = 0.01, image_mode=True):
 
     # input_video should just be the name of the file, not the absolute path
     # input_dir would be the absolute path to the folder containing the input video.
@@ -288,7 +288,7 @@ def extract_landmarks_media_pipe(input_video, input_dir, show_annotated_video = 
     landmark_output = []
     raw_landmark_output = []
     with mp_face_mesh.FaceMesh(
-            static_image_mode=True,
+            static_image_mode=image_mode,
             max_num_faces=1,
             min_detection_confidence=0.5,
             refine_landmarks=True) as face_mesh:
