@@ -41,6 +41,8 @@ class ObjLoader(object):
     def __init__(self, fileName):
         self.vertices = []
         self.faces = []
+        self.transformed_vertices = []
+        self.transformed_faces = []
         ##
         try:
             f = open(fileName)
@@ -61,9 +63,9 @@ class ObjLoader(object):
                     face = []
                     for item in range(string.count(" ")):
                         if string.find(" ", i) == -1:
-                            face.append(string[i:-1])
+                            face.append(int(string[i:-1].split("/")[0]))
                             break
-                        face.append(string[i:string.find(" ", i)])
+                        face.append(int(string[i:string.find(" ", i)].split("/")[0]))
                         i = string.find(" ", i) + 1
                     ##
                     self.faces.append(tuple(face))
@@ -73,9 +75,31 @@ class ObjLoader(object):
             print(".obj file not found.")
         self.vertices = np.array(self.vertices)
         self.faces = np.array(self.faces)
+        self.transformed_vertices = np.array(self.vertices)
+        self.transformed_faces = np.array(self.faces)
+
+    def project(self, pts):
+        # points should be of shape [Number of points, 2]
+        self.transformed_vertices = 0
+    def transform(self, R, c, t):
+        self.transformed_vertices = (c * R @ self.vertices.transpose() + t)
+        self.transformed_vertices = self.transformed_vertices.transpose()
+
+    def inside_triangle(self, triangle_idx, pt):
+        p0 = self.transformed_vertices[self.faces[triangle_idx][0]]
+        p1 = self.transformed_vertices[self.faces[triangle_idx][1]]
+        p2 = self.transformed_vertices[self.faces[triangle_idx][2]]
+        pt
+
+
+
+
 
 
 
 
 if __name__ == "__main__":
     face = ObjLoader("../data/canonical_face_model.obj")
+    face.transform(np.eye(3), 1, np.zeros((3, 1)))
+    print((face.transformed_vertices - face.vertices).max())
+    face.project()
