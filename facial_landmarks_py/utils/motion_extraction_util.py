@@ -2,6 +2,7 @@ import math
 import numpy as np
 import json
 import cv2
+from scipy.spatial.transform import Rotation as Rot
 MIN_CUTOFF = 0.0001
 BETA = 5
 
@@ -54,12 +55,27 @@ def compute_rotation(X, Y):
 # # data should be a numpy array of shape (T, N, M)
 # # staticIndices should be a list of integers, which refers to relavent
 # # dimensions in M for the computations
-def rotateToNeutral(neutralPose, data, staticIndices):
+def rotateFromNeutral(neutralPose, data, staticIndices, ret_rotations=False):
+    outData = np.zeros((data.shape[0], neutralPose.shape[0], neutralPose.shape[1]))
+    Rs = []
+    for i in range(0, data.shape[0]):
+        frame_t = data[i, staticIndices]
+        R, c, t = compute_rotation(neutralPose[staticIndices].T, frame_t.T)
+        Rs.append(R)
+        outData[i] = (c * R @ np.array(neutralPose).T + t).T
+    if ret_rotations:
+        return outData, Rs
+    return outData
+def rotateToNeutral(neutralPose, data, staticIndices, ret_rotations=False):
     outData = np.zeros(data.shape)
+    Rs = []
     for i in range(0, data.shape[0]):
         frame_t = data[i, staticIndices]
         R, c, t = compute_rotation(frame_t.T, neutralPose[staticIndices].T)
+        Rs.append(R)
         outData[i] = (c * R @ data[i].T + t).T
+    if ret_rotations:
+        return outData, Rs
     return outData
 # get the 6 sheer matrices in three dimensions,
 def getSheerMat(dimensions=3):
@@ -254,13 +270,14 @@ def constrainedOneEuroFilter(data, dataRange, keyFrames):
 #################################################################################
 ########################## output to json utils ##########################
 #################################################################################
-def outputToFile(path, arr, fps, start):
+def outputToFile(path, arr, fps, start, angle=False):
     # the input should be in the form of a 2D array with shape [n, ]
     arr_length = arr.shape[0]
     dt = 1.0 / fps
     t_arr = np.arange(0, arr_length) * dt + start
     t_arr = t_arr.tolist()
-    arr = arr / arr.max()
+    if not angle:
+        arr = arr / arr.max()
     v_arr = arr.tolist()
 
     output = {"t": t_arr, "v": v_arr}

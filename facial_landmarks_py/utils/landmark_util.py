@@ -9,7 +9,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 from matplotlib import pyplot as plt
 import json
-import face_alignment
+# import face_alignment
 
 class VideoWriter():
     def __init__(self, opath, fps=25):
