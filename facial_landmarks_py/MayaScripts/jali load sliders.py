@@ -8,8 +8,6 @@ def getSelectedChannels():
     if not attrs:
         return []
     return attrs
-
-
 def textLoading(pathTextFiled, intensitySlider):
     thisPath = pathTextFiled
     thisSlider = intensitySlider
@@ -49,8 +47,6 @@ def textLoading(pathTextFiled, intensitySlider):
                 cmds.setKeyframe(node + "." + attr, v=v[i] * attr_max, t=t[i] * 30)
 
     return loadTxt
-
-
 def rotationtextLoading(pathTextFiled, intensitySlider):
     thisPath = pathTextFiled
     thisSlider = intensitySlider
@@ -84,8 +80,6 @@ def rotationtextLoading(pathTextFiled, intensitySlider):
             cmds.setKeyframe("CNT_NECK.rotateY", v=v[i][1] * val, t=t[i] * 30)
 
     return loadTxt
-
-
 def clearSelectedNodes(*args):
     selected = cmds.ls(sl=True, long=True) or []
     attrs = getSelectedChannels()
